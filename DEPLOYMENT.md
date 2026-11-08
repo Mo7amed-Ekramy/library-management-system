@@ -18,7 +18,7 @@ Run `node deployment/initialize-demo.mjs` from the backend directory with the da
 
 ## Frontend
 
-Set `VITE_API_URL=https://BACKEND_HOST/api` before building. The Vite default `/api` is suitable only when a same-origin API proxy is configured. Run `npm ci` and `npm run build` from `frontend`.
+Set `VITE_API_URL=https://BACKEND_HOST/api` before building. Production defaults to `/api`, suitable only with a same-origin API proxy. Local development preserves `http://localhost:5000/api`. Run `npm ci` and `npm run build` from `frontend`.
 
 ## Validation
 

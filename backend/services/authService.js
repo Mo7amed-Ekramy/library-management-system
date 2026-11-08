@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import { pool } from '../config/database.js';
 import { DEFAULT_BORROWING_LIMIT, USER_ROLES } from '../config/constants.js';
 
@@ -16,13 +17,13 @@ export class AuthService {
         throw new Error('Email already registered');
       }
 
-      // ❌ NO HASHING (plain password)
+      const passwordHash = await bcrypt.hash(password, 12);
       const [result] = await connection.execute(
         `
         INSERT INTO users (email, password, name, role, borrowing_limit, created_at)
         VALUES (?, ?, ?, ?, ?, NOW())
         `,
-        [email, password, name, USER_ROLES.USER, DEFAULT_BORROWING_LIMIT]
+        [email, passwordHash, name, USER_ROLES.USER, DEFAULT_BORROWING_LIMIT]
       );
 
       const userId = result.insertId;
@@ -64,8 +65,7 @@ export class AuthService {
 
       const user = users[0];
 
-      // ❌ Plain text comparison
-      if (password !== user.password) {
+      if (!(await bcrypt.compare(password, user.password))) {
         throw new Error('Invalid email or password');
       }
 
